@@ -2,7 +2,11 @@
 
 ![](docs/img/9401b38c9b161e7f2680ea8cd2972031.jpg)
 
-> 作者：[Apache HBase Team](hbase-dev@lists.apache.org)
+> 原文：[Apache HBase™ Reference Guide](https://hbase.apache.org/book.html)
+> 
+> 作者：[Apache HBase™ Team](mailto:hbase-dev@lists.apache.org)
+> 
+> 协议：[CC BY-NC-SA 4.0](http://creativecommons.org/licenses/by-nc-sa/4.0/)
 > 
 > 欢迎任何人参与和完善：一个人可以走的很快，但是一群人却可以走的更远。
 
