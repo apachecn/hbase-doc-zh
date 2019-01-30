@@ -2,10 +2,15 @@
 
 ![](docs/img/9401b38c9b161e7f2680ea8cd2972031.jpg)
 
-> 作者：[Apache HBase Team](hbase-dev@lists.apache.org)
+> 原文：[Apache HBase™ Reference Guide](https://hbase.apache.org/book.html)
+> 
+> 作者：[Apache HBase™ Team](mailto:hbase-dev@lists.apache.org)
+> 
+> 协议：[CC BY-NC-SA 4.0](http://creativecommons.org/licenses/by-nc-sa/4.0/)
 > 
 > 欢迎任何人参与和完善：一个人可以走的很快，但是一群人却可以走的更远。
 
+* [在线阅读](https://apachecn.github.io/hbase-doc-zh)
 * [贡献指南](CONTRIBUTING.md)
 * [ApacheCN 大数据交流群 152622464](http://shang.qq.com/wpa/qunwpa?idkey=30e5f1123a79867570f665aa3a483ca404b1c3f77737bc01ec520ed5f078ddef)
 * [ApacheCN 学习资源](http://www.apachecn.org/)
