@@ -57,7 +57,7 @@
 ### 三、提交
 
 +   `fork` Github 项目
-+   将译文放在`docs/1.0`文件夹下
++   将译文放在`docs`文件夹下
 +   `push`
 +   `pull request`
 
