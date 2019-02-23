@@ -1,0 +1,58 @@
+# HBase 和 Schema 设计
+
+> 译者：[Raymondcode](https://github.com/raymondcode)
+
+关于各种非 RDBMS 数据存储建模的优缺点，可以在 Ian Varley 的硕士论文 [No Relation: The Mixed Blessings of Non-Relational Databases](http://ianvarley.com/UT/MR/Varley_MastersReport_Full_2009-08-07.pdf) 中找到。虽然有点过时，但是如果你想了解 HBase schema 的建模方式和 RDBMS 的实现方式有什么区别的话，可以当做背景知识阅读一下。另外，阅读 [keyvalue](#keyvalue) 来了解 HBase 内部是如何存储数据的，以及 [schema.casestudies](#schema.casestudies) 章节。
+
+Cloud Bigtable 网站上的 [Designing Your Schema](https://cloud.google.com/bigtable/docs/schema-design) 是很好的相关文档，从里面学到的内容同样适用于 HBase 领域；只要把文档里任何引用的值除10左右即可得到对 HBase 适用的值。比如：文档中提到单个值的大小可以到约10MBs，HBase 也类似，或者最好尽可能的小一些；同时文档中提到，Cloud Bigtable 最多有 100 个列族，在 HBase 建模时考虑改为 约10个列族。
+
+另请参阅 Robert Yokota 的 [HBase Application Archetypes](https://blogs.apache.org/hbase/entry/hbase-application-archetypes-redux) (其他 HBaser 所完成工作的最新信息)，以便对 HBase 模型上的使用案例进行有用的分类。
+
+## 34\. Schema 创建
+
+HBase schemas 可以通过 [The Apache HBase Shell](#shell) 或者 Java API [Admin](https://hbase.apache.org/apidocs/org/apache/hadoop/hbase/client/Admin.html) 来创建或者更新。
+
+当进行列族的修改时，必须禁用表，比如：
+
+```
+Configuration config = HBaseConfiguration.create();
+Admin admin = new Admin(conf);
+TableName table = TableName.valueOf("myTable");
+
+admin.disableTable(table);
+
+HColumnDescriptor cf1 = ...;
+admin.addColumn(table, cf1);      // adding new ColumnFamily
+HColumnDescriptor cf2 = ...;
+admin.modifyColumn(table, cf2);    // modifying existing ColumnFamily
+
+admin.enableTable(table);
+```
+
+阅读 [client dependencies](#client_dependencies) 获取关于配置客户端连接的更多信息。
+
+> 0.92.x 可以支持在线 scheme 变更, 但是 0.90.x 版本需要禁用表。
+
+### 34.1\. Schema 更新
+
+当表或者列族被修改时(比如 region 大小，block 大小)，这些更改会在下一次 major 合并时生效，同时 StoreFiles 会被重写。
+
+阅读 [store](#store) 获取更多关于 StoreFiles 的信息。
+
+## 35\. 表 Schema 的经验法则
+
+因为存在许多种不同的数据集，不同的访问模式和服务层级的要求。所以，以下经验法则只是概述。阅读完此列表后，请阅读这一章的剩余部分以获得更多详细信息。
+
+*   目标是把 region 的大小限制在 10 到 50 GB 之间。
+
+*   目标是限制 cell 的大小在 10 MB 之内，如果使用的是 [mob](#hbase_mob) 类型，限制在 50 MB 之内。否则，考虑把 cell 的数据存储在 HDFS 中，并在 HBase 中存储指向该数据的指针。
+
+*   典型的 scheme 每张表包含 1 到 3 个列族。HBase 表设计不应当和 RDBMS 表设计类似。
+
+*   对于拥有 1 或 2 个列族的表来说，50-100 个 region 是比较合适的。请记住， region 是列族的连续段。
+
+*   保持列族名称尽可能短。每个值都会存储列族的名称(忽略前缀编码)。它们不应该像典型 RDBMS 那样，是自文档化，描述性的名称。
+
+*   如果你正在存储基于时间的机器数据或者日志信息，并且 row key 是基于设备 ID 或者服务 ID + 时间，最终会出现这样一种情况，即更旧的数据 region 永远不会有额外写入。在这种情况下，最终会存在少量的活动 region 和大量不会再有新写入的 region。对于这种情况，可以接受更多的 region 数量，因为资源的消耗只取决于活动 region。
+
+*   如果只有一个列族会频繁写，那么只让这个列族占用内存。当分配资源的时候注意写入模式。
