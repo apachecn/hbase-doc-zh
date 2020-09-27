@@ -14,6 +14,16 @@
 * [ApacheCN 大数据交流群 152622464](http://shang.qq.com/wpa/qunwpa?idkey=30e5f1123a79867570f665aa3a483ca404b1c3f77737bc01ec520ed5f078ddef)
 * [ApacheCN 学习资源](http://www.apachecn.org/)
 
+## 下载
+
+### NPM
+
+```
+npm install -g hbase-doc-zh
+hbase-doc-zh <port>
+# 访问 http://localhost:{port} 查看文档
+```
+
 ## 贡献指南
 
 项目当前处于校对阶段，请查看[贡献指南](CONTRIBUTING.md)，并在[整体进度](https://github.com/apachecn/hbase-doc-zh/issues/1)中领取任务。
