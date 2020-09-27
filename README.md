@@ -16,6 +16,14 @@
 
 ## 下载
 
+### PYPI
+
+```
+pip install hbase-doc-zh
+hbase-doc-zh <port>
+# 访问 http://localhost:{port} 查看文档
+```
+
 ### NPM
 
 ```
